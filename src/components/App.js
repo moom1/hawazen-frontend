@@ -8,16 +8,35 @@ import logout from "./Logout";
 import Home from "./Home";
 import firebase from "../utils/firebase";
 import Register from "./Register";
+import SearchResult from "./SearchResult";
+import Payment from "./Payment";
+import Complete from "./Complete";
 
 class App extends Component {
   state = {
     users: [],
+    rooms: [],
+    loadingRooms: true,
     loading: true,
     user: null,
   };
   componentDidMount() {
     this.setUsers();
+    this.setrooms();
   }
+
+  setrooms = () => {
+    const ref = firebase.firestore().collection("rooms");
+    this.setLoading(true);
+    ref.onSnapshot((querySnapshot) => {
+      const items = [];
+      querySnapshot.forEach((doc) => {
+        items.push(doc.data());
+      });
+      this.setState({ rooms: items });
+      this.setLoadingRooms(false);
+    });
+  };
 
   setUsers = () => {
     const ref = firebase.firestore().collection("users");
@@ -29,22 +48,22 @@ class App extends Component {
       });
       this.setState({ users: items });
       this.setLoading(false);
-      console.log(items);
     });
   };
 
   setLoading = (bool) => {
     this.setState({ loading: bool });
   };
+  setLoadingRooms = (bool) => {
+    this.setState({ loading: bool });
+  };
 
   setUser = (loggedUser) => {
-    console.log("inside on login");
-    console.log("user", loggedUser);
     this.setState({ user: loggedUser });
   };
 
   render() {
-    if (this.state.loading) {
+    if (this.state.loading && this.state.loadingRooms) {
       return <h1>Loading...</h1>;
     }
 
@@ -68,7 +87,46 @@ class App extends Component {
                 path="/home"
                 render={(history) => <Home user={this.state.user} />}
               />
+              <Route
+                exact
+                path="/result/:checkInDate/:checkOutDate/:priceMultiplier"
+                render={(props) => (
+                  <SearchResult
+                    user={this.state.user}
+                    priceMultiplier={props.match.params.priceMultiplier}
+                    checkInDate={props.match.params.checkInDate}
+                    checkOutDate={props.match.params.checkOutDate}
+                    rooms={this.state.rooms}
+                  />
+                )}
+              />
 
+              <Route
+                exact
+                path="/result/:checkInDate/:checkOutDate/:priceMultiplier/payment/:roomID"
+                render={(props) => (
+                  <Payment
+                    user={this.state.user}
+                    priceMultiplier={props.match.params.priceMultiplier}
+                    checkInDate={props.match.params.checkInDate}
+                    checkOutDate={props.match.params.checkOutDate}
+                    roomId={props.match.params.roomID}
+                  />
+                )}
+              />
+              <Route
+                exact
+                path="/complete/:checkInDate/:checkOutDate/:priceMultiplier/:roomID/:name"
+                render={(props) => (
+                  <Complete
+                    name={props.match.params.name}
+                    nights={props.match.params.priceMultiplier}
+                    checkInDate={props.match.params.checkInDate}
+                    checkOutDate={props.match.params.checkOutDate}
+                    roomId={props.match.params.roomID}
+                  />
+                )}
+              />
               <Route path="/logout" exact component={logout} />
               <Route path="/register" exact component={Register} />
 

@@ -32,7 +32,6 @@ class Login extends Component {
     const user = users.filter(
       (u) => email === u.email && password === u.password
     )[0];
-    console.log("user:", user);
     onLogin(user);
 
     if (user) {

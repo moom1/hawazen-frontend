@@ -13,11 +13,6 @@ class Nav extends Component {
               Home
             </NavLink>
           </li>
-          <li>
-            <NavLink to="/view" exact activeClassName="active">
-              Search
-            </NavLink>
-          </li>
 
           <li className="d-flex justify-content-end">
             <span className="mx-2">Welcome, {this.props.user.name}</span>
