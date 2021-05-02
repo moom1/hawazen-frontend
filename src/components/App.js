@@ -15,28 +15,12 @@ import Complete from "./Complete";
 class App extends Component {
   state = {
     users: [],
-    rooms: [],
-    loadingRooms: true,
     loading: true,
     user: null,
   };
   componentDidMount() {
     this.setUsers();
-    this.setrooms();
   }
-
-  setrooms = () => {
-    const ref = firebase.firestore().collection("rooms");
-    this.setLoading(true);
-    ref.onSnapshot((querySnapshot) => {
-      const items = [];
-      querySnapshot.forEach((doc) => {
-        items.push(doc.data());
-      });
-      this.setState({ rooms: items });
-      this.setLoadingRooms(false);
-    });
-  };
 
   setUsers = () => {
     const ref = firebase.firestore().collection("users");
@@ -54,16 +38,13 @@ class App extends Component {
   setLoading = (bool) => {
     this.setState({ loading: bool });
   };
-  setLoadingRooms = (bool) => {
-    this.setState({ loading: bool });
-  };
 
   setUser = (loggedUser) => {
     this.setState({ user: loggedUser });
   };
 
   render() {
-    if (this.state.loading && this.state.loadingRooms) {
+    if (this.state.loading) {
       return <h1>Loading...</h1>;
     }
 
@@ -96,7 +77,6 @@ class App extends Component {
                     priceMultiplier={props.match.params.priceMultiplier}
                     checkInDate={props.match.params.checkInDate}
                     checkOutDate={props.match.params.checkOutDate}
-                    rooms={this.state.rooms}
                   />
                 )}
               />

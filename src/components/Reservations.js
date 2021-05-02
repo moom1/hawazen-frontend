@@ -23,6 +23,7 @@ export default class Reservations extends Component {
       querySnapshot.forEach((doc) => {
         items.push({ ...doc.data(), id: doc.id });
       });
+
       this.setState({ reservations: items });
       this.setLoading(false);
     });
